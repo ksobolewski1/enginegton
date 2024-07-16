@@ -1,0 +1,91 @@
+
+### PINS 
+8/3k4/8/3q4/3Q4/8/3K4/8 w - - 0 1
+8/3k4/8/3q4/3Q4/8/3K4/8 b - - 0 1
+k7/8/8/3q4/4Q3/8/8/7K w - - 0 1
+k7/8/8/3q4/4Q3/8/8/7K b - - 0 1
+R2q2k1/5bb1/1b3B2/2PQ4/r1BK2Rq/2R1N3/1b1B4/3r2b1 w - - 0 1
+R2q2k1/5bb1/1b3B2/2PQ4/r1BK2Rq/2R1N3/1b1B4/3r2b1 b - - 0 1
+4r3/8/b7/1P3P1b/8/4PP2/q2PK3/k7 w - - 0 1
+4k3/8/8/8/3Pp3/4Q3/4K3/8 b - - 0 1
+4k3/8/4r3/3pP3/3P4/8/4K3/8 w - - 0 1
+k6q/1b6/8/8/8/8/6RB/r5BK w - - 0 1 
+k6q/1b6/8/8/8/8/6RR/r5BK w - - 0 1
+7Q/B2Q4/8/2nnn3/Q1nkn2R/2nnn3/1Q1R1B2/8 b - - 0 1
+8/8/8/5k2/3Pp3/8/8/1B2K3 b - d3 0 1
+4k1b1/8/8/3Pp3/8/8/K3B3/8 w - e6 0 1
+
+### EN PASSANT 
+8/4k3/8/8/PpPpPpPp/8/4K3/8 b - a3 0 1
+8/4k3/8/8/PpPpPpPp/8/4K3/8 b - c3 0 1
+8/4k3/8/8/PpPpPpPp/8/4K3/8 b - g3 0 1
+8/4k3/8/PpPpPpPp/8/8/4K3/8 w - b6 0 1
+8/4k3/8/PpPpPpPp/8/8/4K3/8 w - d6 0 1
+8/4k3/8/PpPpPpPp/8/8/4K3/8 w - f6 0 1
+8/4k3/8/PpPpPpPp/8/8/4K3/8 w - h6 0 1
+8/4k3/8/pPpPpPpP/8/8/4K3/8 w - a6 0 1
+8/4k3/8/pPpPpPpP/8/8/4K3/8 w - c6 0 1
+8/4k3/8/pPpPpPpP/8/8/4K3/8 w - g6 0 1
+8/4k3/8/8/pPpPpPpP/8/4K3/8 b - b3 0 1
+8/4k3/8/8/pPpPpPpP/8/4K3/8 b - d3 0 1
+8/4k3/8/8/pPpPpPpP/8/4K3/8 b - f3 0 1
+8/4k3/8/8/pPpPpPpP/8/4K3/8 b - h3 0 1
+
+### CASTLING 
+r3k2r/8/B7/1b3b2/8/1B6/8/R3K2R w KQkq - 0 1
+r3k2r/8/B7/1b3b2/8/1B6/8/R3K2R b KQkq - 0 1
+r3k2r/8/8/8/8/2Rr1Rr1/8/R3K2R w KQkq - 0 1
+r3k2r/8/8/8/8/2Rr1Rr1/8/R3K2R b KQkq - 0 1
+r3k2r/1P4P1/8/8/8/8/2p3p1/R3K2R w KQkq - 0 1
+r3k2r/1P4P1/8/8/8/8/2p3p1/R3K2R b KQkq - 0 1
+r3k2r/8/8/8/8/8/8/R3K2R w Qk - 0 1
+r3k2r/8/8/8/8/8/8/R3K2R b Qk - 0 1
+r3k2r/8/8/8/8/8/8/R3K2R w Kq - 0 1
+r3k2r/8/8/8/8/8/8/R3K2R b Kq - 0 1
+r3k2r/8/4N3/8/8/4n3/8/R3K2R b KQkq - 0 1
+r3k2r/8/4N3/8/8/4n3/8/R3K2R w KQkq - 0 1
+
+
+###### board.py must append game state with stalemate and checkmate 
+
+
+### STALEMATE 
+
+
+### CHECKMATE 
+
+
+- cases with pins 
+
+
+### CHECK 
+
+8/8/8/6k1/K5pP/8/8/8 b - h3 0 1
+8/8/8/5k2/K2pPp2/8/8/8 b - e3 0 1
+8/8/8/Pp3k2/K3p3/8/8/8 w - b6 0 1
+8/8/8/1p1PpP2/5K2/8/3k4/8 w - e6 0 1
+
+### X rays 
+8/8/8/3K4/8/8/3r4/4k3 w - - 0 1
+8/8/8/3K4/8/8/6b1/4k3 w - - 0 1
+q7/5q2/8/3K4/8/8/8/4k3 w - - 0 1
+q7/3q4/8/3K4/8/8/8/4k3 w - - 0 1
+Q7/3Q4/8/3k4/8/8/8/4K3 b - - 0 1
+8/5B2/8/3k4/8/8/8/4K3 b - - 0 1
+8/8/8/3k4/8/8/B7/4K3 b - - 0 1
+8/8/8/3K4/8/8/b7/4k3 w - - 0 1
+8/8/8/3k4/8/8/3Q4/4K3 b - - 0 1
+8/8/8/R2k4/8/8/8/4K3 b - - 0 1
+
+### PROMOTION
+8/3P4/8/K6k/8/8/5p2/8 w - - 0 1
+8/3P4/8/K6k/8/8/5p2/8 b - - 0 1
+2nnn3/3P4/8/K6k/8/8/5p2/4NNN1 w - - 0 1
+2nnn3/3P4/8/K6k/8/8/5p2/4NNN1 b - - 0 1
+8/PPPPPPPP/8/K6k/8/8/pppppppp/8 w - - 0 1
+8/PPPPPPPP/8/K6k/8/8/pppppppp/8 b - - 0 1
+nnnnnnnn/PPPPPPPP/8/K6k/8/8/pppppppp/NNNNNNNN w - - 0 1
+nnnnnnnn/PPPPPPPP/8/K6k/8/8/pppppppp/NNNNNNNN b - - 0 1
+
+
+
