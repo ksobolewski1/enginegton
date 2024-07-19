@@ -14,7 +14,7 @@ struct piece* get_piece(enum piece_id id, U8 sqr) {
 	return NULL;
     }
 
-    // p->attack_mask = p->move_mask = 0; 
+    p->attack_mask = p->move_mask = 0; 
     p->id = id; 
     p->sqr = sqr; 
     p->next = p->prev = NULL; 
