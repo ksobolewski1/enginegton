@@ -48,10 +48,6 @@ U64 wpawn_attack(U8 y, U8 x, U8 origin);
 
 U64 bpawn_attack(U8 y, U8 x, U8 origin);
 
-U64 wpawn_push(U8 y, U8 x, U8 origin);
-
-U64 bpawn_push(U8 y, U8 x, U8 origin);
-
 U64 knight_attack(U8 y, U8 x, U8 origin);
 
 U64 rook_attack(U8 y, U8 x, U8 origin);
@@ -90,8 +86,6 @@ int main(int argc, char** argv) {
     write64(fptr, "wpawn_attacks", wpawn_attack);
     write64(fptr, "bpawn_attacks", bpawn_attack);
     write64(fptr, "knight_attacks", knight_attack);
-    write64(fptr, "wpawn_pushes", wpawn_push);
-    write64(fptr, "bpawn_pushes", bpawn_push);
     write8(fptr, "rook_shifts", rook_index_shifts);
     write8(fptr, "bishop_shifts", bishop_index_shifts);
     write64(fptr, "rook_attacks", rook_attack);
@@ -210,20 +204,6 @@ U64 bpawn_attack(U8 y, U8 x, U8 origin) {
     if (x - 1 >= 0) control |= (1ULL << (origin + 7));
     if (x + 1 < 8) control |= (1ULL << (origin + 9));
     return control;
-}
-
-U64 wpawn_push(U8 y, U8 x, U8 origin) {
-    U64 push = (1ULL << origin - 8);
-    if (origin <= 7 || origin >= 56) return 0; 
-    if (y == 6) push |= (1ULL << (origin - 16)); 
-    return push; 
-}
-
-U64 bpawn_push(U8 y, U8 x, U8 origin) {
-    U64 push = (1ULL << origin + 8);
-    if (origin <= 7 || origin >= 56) return 0; 
-    if (y == 1) push |= (1ULL << (origin + 16));
-    return push;
 }
 
 U64 knight_attack(U8 y, U8 x, U8 origin) {

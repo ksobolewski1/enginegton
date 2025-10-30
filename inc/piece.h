@@ -7,9 +7,6 @@ struct piece {
 
     struct piece* prev;
     struct piece* next;
-
-    U64 attacks;
-    U64 moves;
     
     U8 sqr;
     enum piece_id id; 

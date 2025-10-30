@@ -10,8 +10,6 @@ extern const U64 king_attacks[64];
 extern const U64 wpawn_attacks[64];
 extern const U64 bpawn_attacks[64];
 extern const U64 knight_attacks[64];
-extern const U64 wpawn_pushes[64];
-extern const U64 bpawn_pushes[64];
 
 extern const U8 rook_shifts[64];
 extern const U8 bishop_shifts[64];

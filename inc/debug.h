@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-void printU64(U64 data) {
+static inline void printU64(U64 data) {
 
     printf("U64: %llu\n", data);
     

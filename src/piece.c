@@ -10,11 +10,10 @@ struct piece* get_piece(enum piece_id id, U8 sqr) {
     struct piece* p = (struct piece*)malloc(sizeof(struct piece));
 
     if (p == NULL) {
-	fprintf(stderr, "Error: Failed to allocate memory for struct 'piece'\n");
-	return NULL;
+	    fprintf(stderr, "Error: Failed to allocate memory for struct 'piece'\n");
+	    return NULL;
     }
 
-    p->attacks = p->moves = 0; 
     p->id = id; 
     p->sqr = sqr; 
     p->next = p->prev = NULL; 

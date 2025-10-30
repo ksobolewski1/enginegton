@@ -13,15 +13,14 @@ struct position {
     struct piece* board[64];
     
     struct piece* pawns[2]; 
-	struct piece* hoppers[2]; // king and knights
-    struct piece* sliders[2]; // rook, bishop, queen 
+    struct piece* pieces[2];
     
     U64 pin_paths[64];
 
     U64 side_masks[2];
     U64 board_mask;
-    
-    U8 en_passant_sqr;
+    U64 en_passant_sqr;
+
     U8 castling_rights; 
     
     enum colour side;
@@ -33,7 +32,7 @@ struct position {
 void free_pos(struct position* pos); 
 
 
-struct position* from_fen(char* fen); 
+struct position* from_fen(const char* fen); 
 
 
 char* to_fen(struct position* pos); 

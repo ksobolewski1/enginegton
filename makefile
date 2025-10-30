@@ -46,9 +46,10 @@ test: TARGET=$(BUILD_DIR)/test
 
 
 test: $(TARGET) 
-	$(TARGET) $(CURDIR) $(TEST_NAME)
 
 
 clean:
-	rm $(TARGET) ; rm -r $(OBJ_DIR) ; rm $(BUILD_DIR)/precomp
+	rm -f $(TARGET) ; rm -rf $(OBJ_DIR) ; rm -f $(BUILD_DIR)/precomp
 
+clean-test:
+	rm -f $(BUILD_DIR)/test ; rm -rf $(OBJ_DIR)

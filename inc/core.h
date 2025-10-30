@@ -68,4 +68,12 @@ static inline U16 move_lts(const U32 m) {
     return (U16)(m >> 16); 
 }
 
-
+static inline U64 mask_to_ones(U64 mask) {
+    mask |= mask >> 1;
+    mask |= mask >> 2;
+    mask |= mask >> 4;
+    mask |= mask >> 8;
+    mask |= mask >> 16;
+    mask |= mask >> 32;
+    return mask;
+}
