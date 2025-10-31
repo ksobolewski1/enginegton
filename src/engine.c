@@ -17,7 +17,7 @@ void generate_moves(const char* fen) {
     struct position* pos = from_fen(fen);
     struct mqueue* q = get_mqueue();
 
-    get_moves(pos, q);
+    enum board_state state = get_moves(pos, q);
 
     printf("%i", q->N);
 }

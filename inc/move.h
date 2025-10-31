@@ -41,7 +41,7 @@ void wpawn_moves(const U8 sqr, const U64 en_passant_sqr, U64 blockers, const U64
 void bpawn_moves(const U8 sqr, const U64 en_passant_sqr, U64 blockers, const U64 opposing_pieces, U64 pin_path, struct mqueue* q);
 
 
-void knight_moves(const U8 sqr, const U64 own_pieces, struct mqueue* q);
+void knight_moves(const U8 sqr, const U64 own_pieces, U64 constraint, struct mqueue* q);
 
 
 void king_moves(const U8 sqr, const U64 own_pieces, const U64 attacks, struct mqueue* q);

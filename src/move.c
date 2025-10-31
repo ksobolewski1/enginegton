@@ -10,24 +10,18 @@ U64 knight_att(const U8 sqr);
 U64 king_att(const U8 sqr);
 
 
+#define FIRST_RANK     0xFF00000000000000ULL
 #define FOURTH_RANK    0x000000FF00000000ULL
 #define FIFTH_RANK     0x00000000FF000000ULL
+#define EIGHT_RANK     0x00000000000000FFULL
 
 
-// to use the x86 bsr instruction 
-#define LOG2(X) ((unsigned) (8*sizeof (unsigned long long) - __builtin_clzll((X)) - 1))
-
-
-// rating is 0 for now 
-// MUST PASS IN THE MOVE TYPE
-void from_bit_scan_enqueue(const U8 sqr, const U64 moves, struct mqueue* queue) {
+void enqueue_moves(const U8 sqr, U64 moves, enum move_type mtype, struct mqueue* queue) {
     
-    I64 signed_moves = (I64)moves; 
-    while (signed_moves != 0) {	
-		I64 lsb = signed_moves & -signed_moves;
-		U8 loglsb = (U8)LOG2((U64)lsb);
-		enqueue(queue, get_move(sqr, loglsb, NORMAL, 0));
-		signed_moves ^= lsb;
+    while (moves) {	
+		U8 destination_sqr = __builtin_ctzll(moves);
+		enqueue(queue, get_move(sqr, destination_sqr, mtype, 0));
+		moves &= moves - 1; // ctzll called on 0 is undefined behaviour
     }
 }
 
@@ -48,63 +42,61 @@ U64 rook_att(const U8 sqr, const U64 blockers_mask) {
 }
 
 
-void wpawn_moves(const U8 sqr, const U64 en_passant_sqr, U64 blockers, const U64 opposing_pieces, U64 pin_path, struct mqueue* q) {
+void wpawn_moves(const U8 sqr, const U64 en_passant_sqr, U64 blockers, const U64 opposing_pieces, U64 constraint, struct mqueue* q) {
 
     U64 moves = (1ULL << (sqr - 8)) & ~blockers;
     moves |= ((moves >> 8) & ~blockers) & FOURTH_RANK;
     moves |= wpawn_attacks[sqr] & opposing_pieces;
     moves |= en_passant_sqr;
+    moves &= constraint;
 
-    from_bit_scan_enqueue(sqr, moves, q);
-
-    // PROMOTION
+    enqueue_moves(sqr, moves, moves & EIGHT_RANK, q);
 }
 
 
-void bpawn_moves(const U8 sqr, const U64 en_passant_sqr, U64 blockers, const U64 opposing_pieces, U64 pin_path, struct mqueue* q) {
+void bpawn_moves(const U8 sqr, const U64 en_passant_sqr, U64 blockers, const U64 opposing_pieces, U64 constraint, struct mqueue* q) {
 
     U64 moves = (1ULL << (sqr + 8)) & ~blockers;
     moves |= ((moves << 8) & ~blockers) & FIFTH_RANK; 
     moves |= bpawn_attacks[sqr] & opposing_pieces;
     moves |= en_passant_sqr;
+    moves &= constraint;
 
-    from_bit_scan_enqueue(sqr, moves, q);
-
-    // PROMOTION
-
+    enqueue_moves(sqr, moves, moves & FIRST_RANK, q);
 }
 
-// ENQUEUE SPECIAL MOVES DIRECTLY
 
+void knight_moves(const U8 sqr, const U64 own_pieces, U64 constraint, struct mqueue* q) {
 
-void knight_moves(const U8 sqr, const U64 own_pieces, struct mqueue* q) {
-
-    from_bit_scan_enqueue(sqr, knight_att(sqr) & ~own_pieces, q);
+    enqueue_moves(sqr, (knight_att(sqr) & ~own_pieces) & constraint, NORMAL, q);
 }
 
 
 void king_moves(const U8 sqr, const U64 own_pieces, const U64 attacks, struct mqueue* q) {
 
-    from_bit_scan_enqueue(sqr, king_att(sqr) & ~(own_pieces | attacks), q);
+    enqueue_moves(sqr, king_att(sqr) & ~(own_pieces | attacks), NORMAL, q);
 }
 
 
-void bishop_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 pin_path, struct mqueue* q) {
+void bishop_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 constraint, struct mqueue* q) {
 
     U64 moves = bishop_att(sqr, board_mask) & ~own_pieces;
-    from_bit_scan_enqueue(sqr, moves, q);
+    moves &= constraint;
+    enqueue_moves(sqr, moves, NORMAL, q);
 }
 
 
-void rook_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 pin_path, struct mqueue* q) {
+void rook_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 constraint, struct mqueue* q) {
 
     U64 moves = rook_att(sqr, board_mask) & ~own_pieces;
-    from_bit_scan_enqueue(sqr, moves, q);
+    moves &= constraint;
+    enqueue_moves(sqr, moves, NORMAL, q);
 }
 
 
-void queen_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 pin_path, struct mqueue* q){
+void queen_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 constraint, struct mqueue* q){
     
     U64 moves = (rook_att(sqr, board_mask) | bishop_att(sqr, board_mask)) & ~own_pieces;
-    from_bit_scan_enqueue(sqr, moves, q);
+    moves &= constraint;
+    enqueue_moves(sqr, moves, NORMAL, q);
 }

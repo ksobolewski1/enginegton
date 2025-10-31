@@ -10,7 +10,7 @@ typedef signed char I8;
 typedef signed long long int I64; 
 
 
-enum board_state { QUIET, CHECK, DCHECK, CHECKMATE, STALEMATE, INSUFFICIENT, THREEFOLD, FIFTY, ERROR_STATE };
+enum board_state { QUIET, CHECK, CHECKMATE, STALEMATE, INSUFFICIENT, THREEFOLD, FIFTY, ERROR_STATE };
 
 
 enum colour { BLACK, WHITE };
@@ -23,7 +23,7 @@ enum piece_id {
 };
 
 enum move_type {
-    KNIGHT_PROMO, BISHOP_PROMO, ROOK_PROMO, QUEEN_PROMO, SHORT_CASTLE, LONG_CASTLE, EN_PASSANT, NORMAL
+    NORMAL, PROMOTION, EN_PASSANT, CASTLE, CAPTURE
 };
     
 static inline U32 get_move(
@@ -68,12 +68,28 @@ static inline U16 move_lts(const U32 m) {
     return (U16)(m >> 16); 
 }
 
-static inline U64 mask_to_ones(U64 mask) {
-    mask |= mask >> 1;
-    mask |= mask >> 2;
-    mask |= mask >> 4;
-    mask |= mask >> 8;
-    mask |= mask >> 16;
-    mask |= mask >> 32;
-    return mask;
+// short for "mask-to-ones": output the mask itself if at least one bit set, else 0xFFFFFFFFFFFFFFFF
+static inline U64 mto(U64 mask) {
+    return mask | (-!mask);
+
+    /*
+
+        this function is used when passing in constraints to piece moves in moves.c;
+        when the constraints are 0, this function turns the mask into all 1s, 
+        so that it has no effect on the moves (the piece is not pinned, nor is there check)
+    
+    */
+}
+
+// short for "mask-to-zeroes": output 0xFFFFFFFFFFFFFFFF if at least one bit set, else 0
+static inline U64 mtz(U64 mask) {
+    return -!!mask;
+
+    /*
+
+        this function is used to zero-out a bitboard if a condition is not met;
+        for example, if there is no intersection between an attack and the king, 
+        this function will zero-out the check_path
+    
+    */
 }

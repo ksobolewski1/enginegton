@@ -200,8 +200,6 @@ enum board_state get_moves(struct position* pos, struct mqueue* queue) {
     const enum colour turn = pos->side;
     const enum colour wait = pos->side ^ 1;
 
-    U8 state = 0;
-
     const U8 moving_king_sqr = pos->pieces[turn]->sqr;
 	const U64 moving_king_mask = 1ULL << moving_king_sqr; // dependent on above (?)
 
@@ -225,12 +223,12 @@ enum board_state get_moves(struct position* pos, struct mqueue* queue) {
 			
 			case WHITE_PAWN: 
 				att |= wpawn_att(sqr);
-				check_path = (1ULL << sqr) & mask_to_ones(moving_king_sqr & att);
+				check_path = (1ULL << sqr) & mtz(moving_king_mask & att);
 				attacks |= att;
 				break;
 			case BLACK_PAWN:
 				att |= bpawn_att(sqr);
-				check_path = (1ULL << sqr) & mask_to_ones(moving_king_sqr & att);
+				check_path = (1ULL << sqr) & mtz(moving_king_mask & att);
 				attacks |= att;
 				break;
 			default:
@@ -247,6 +245,7 @@ enum board_state get_moves(struct position* pos, struct mqueue* queue) {
 	// pin detection masks
 	U64 king_rook_att = rook_att(moving_king_sqr, board_mask);
 	U64 king_bishop_att = bishop_att(moving_king_sqr, board_mask);
+
 	U64 intersections = 0;
 
 	current_piece = pos->pieces[wait];
@@ -265,25 +264,35 @@ enum board_state get_moves(struct position* pos, struct mqueue* queue) {
 			case WHITE_KNIGHT:
 			case BLACK_KNIGHT:
 				att = knight_att(sqr);
-				check_path = (1ULL << sqr) & mask_to_ones(moving_king_sqr & att);
+				check_path = (1ULL << sqr) & mtz(moving_king_mask & att);
 				attacks |= att;
 				break;
 			case WHITE_BISHOP:
 			case BLACK_BISHOP: 
 				att = bishop_att(sqr, board_mask_no_king);
+				// this generates the attacks again because the king is x-rayed in the above, 
+				// otherwise the intersection below would add squares behind the king to the check_path
+				check_path = ((king_bishop_att & bishop_att(sqr, board_mask)) & ~moving_king_mask) & mtz(moving_king_mask & att);
+				
 				attacks |= att;
 				break;
-			
 			case WHITE_ROOK:
 			case BLACK_ROOK: 
 				att = rook_att(sqr, board_mask_no_king);
+				// this generates the attacks again because the king is x-rayed in the above, 
+				// so the intersection below would add squares behind the king to the check_path
+				check_path = ((king_rook_att & rook_att(sqr, board_mask)) & ~moving_king_mask) & mtz(moving_king_mask & att);
+
 				attacks |= att;
 				break;
-			
 			case WHITE_QUEEN:
 			case BLACK_QUEEN: {
 				U64 attb = bishop_att(sqr, board_mask_no_king);
+				check_path = ((king_bishop_att & bishop_att(sqr, board_mask)) & ~moving_king_mask) & mtz(moving_king_mask & attb);
+
 				U64 attr = rook_att(sqr, board_mask_no_king);
+				check_path = ((king_rook_att & rook_att(sqr, board_mask)) & ~moving_king_mask) & mtz(moving_king_mask & attr);
+
 				attacks |= (attb | attr);
 				break;
 			}
@@ -298,42 +307,34 @@ enum board_state get_moves(struct position* pos, struct mqueue* queue) {
     ///////////////////////////////////////////////// MOVING SIDE 
 
 	current_piece = pos->pieces[turn]; 
-	if (state == 2) { // if double check, only the king can move 
-		king_moves(current_piece->sqr, moving_side_mask, attacks, queue);
-		goto END;
-	}
+	king_moves(current_piece->sqr, moving_side_mask, attacks, queue);
 
-	// JUST & WITH AN INTERSECTION OF CHECK PATH & PIN PATH - IF PINNED, THAT & WILL BE 0 ANYWAY - this removes the branching
+	// DOUBLE CHECK HERE
 
+	// CASTLE HERE
+
+	current_piece = current_piece->next;
 	while (current_piece != NULL) {
 
 		U8 sqr = current_piece->sqr;
 
 		switch (current_piece->id) {
 
-			case WHITE_KING:
-				king_moves(sqr, moving_side_mask, attacks, queue);
-				// white king castle function
-				break;
-			case BLACK_KING:
-				king_moves(sqr, moving_side_mask, attacks, queue);
-				// black king castle function
-				break;
 			case WHITE_KNIGHT:
 			case BLACK_KNIGHT:
-				knight_moves(sqr, moving_side_mask, queue);
+				knight_moves(sqr, moving_side_mask, mto(check_path), queue);
 				break;
 			case WHITE_BISHOP:
 			case BLACK_BISHOP:
-				bishop_moves(sqr, board_mask, moving_side_mask, pos->pin_paths[sqr], queue);
+				bishop_moves(sqr, board_mask, moving_side_mask, mto(check_path), queue);
 				break;
 			case WHITE_ROOK:
 			case BLACK_ROOK:
-				rook_moves(sqr, board_mask, moving_side_mask, pos->pin_paths[sqr], queue);
+				rook_moves(sqr, board_mask, moving_side_mask, mto(check_path), queue);
 				break;
 			case WHITE_QUEEN:
 			case BLACK_QUEEN:
-				queen_moves(sqr, board_mask, moving_side_mask, pos->pin_paths[sqr], queue);
+				queen_moves(sqr, board_mask, moving_side_mask, mto(check_path), queue);
 				break;
 			default:
 				break;
@@ -353,10 +354,10 @@ enum board_state get_moves(struct position* pos, struct mqueue* queue) {
 		switch (current_piece->id) {
 
 			case WHITE_PAWN:
-				wpawn_moves(current_piece->sqr, en_passant_mask, board_mask, waiting_side_mask, pos->pin_paths[sqr], queue);
+				wpawn_moves(sqr, en_passant_mask, board_mask, waiting_side_mask, mto(check_path), queue);
 				break;
 			case BLACK_PAWN:
-				bpawn_moves(current_piece->sqr, en_passant_mask, board_mask, waiting_side_mask, pos->pin_paths[sqr], queue);
+				bpawn_moves(sqr, en_passant_mask, board_mask, waiting_side_mask, mto(check_path), queue);
 				break;
 			default:
 				break;
@@ -364,14 +365,11 @@ enum board_state get_moves(struct position* pos, struct mqueue* queue) {
 
 		current_piece = current_piece->next;
 	}
-	
-END:
 
-	if (queue->N == 0) {
-		if (state > 0) return CHECKMATE;
-		else return STALEMATE;
-	}
-    return (enum board_state)state;
+	U8  check = !!check_path;
+	U8 	move_count = !!queue->N;
+
+	return (enum board_state)((check & move_count) + ((check & !move_count) << 1) + ((!check & !move_count) * 3));
     
 }
 
