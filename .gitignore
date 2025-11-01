@@ -2,4 +2,5 @@ scratch.md
 build/obj
 build/eng
 build/test
+build/precomp
 src/data.c

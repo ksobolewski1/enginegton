@@ -52,4 +52,4 @@ clean:
 	rm -f $(TARGET) ; rm -rf $(OBJ_DIR) ; rm -f $(BUILD_DIR)/precomp
 
 clean-test:
-	rm -f $(BUILD_DIR)/test ; rm -rf $(OBJ_DIR)
+	rm -f $(BUILD_DIR)/test ; rm -rf $(OBJ_DIR) ; rm -f $(BUILD_DIR)/precomp
