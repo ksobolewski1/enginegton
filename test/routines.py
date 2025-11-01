@@ -1,15 +1,14 @@
 
 import chess
 import subprocess
+from collections import Counter # since when comparing move lists, there can be duplicates 
 
 
-def move_gen_correctness():
+def move_gen_accuracy():
     
     # read in the file
 
     fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    board = chess.Board(fen)
-    moves = list(board.legal_moves)
 
     result = subprocess.run(
         ["./build/test", "0", fen],
@@ -17,14 +16,18 @@ def move_gen_correctness():
         text=True
     )
 
-    print("STDOUT:", result.stdout)
-    print("STDERR:", result.stderr)
-    print("CODE:", result.returncode)
+    # check if return code was fine
 
-    # parse the engine's response and compare
+    python_moves = [move.uci() for move in chess.Board(fen).legal_moves]
+    engine_moves = result.stdout.split(";")
+
+    if Counter(python_moves) != Counter(engine_moves):
+        print(result.stdout)
+        print("wrong engine output")
+        # ask if test should continue
 
 available = {
         
-        "mgc": move_gen_correctness
+        "mga": move_gen_accuracy
 
 }

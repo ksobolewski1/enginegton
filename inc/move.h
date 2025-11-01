@@ -54,3 +54,6 @@ void rook_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 pi
 
 
 void queen_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 pin_path, struct mqueue* q);
+
+
+void castle(U8 sqr, U8 rights, U64 board_mask, enum colour c, U64 attacks, U64 check, struct mqueue* q);

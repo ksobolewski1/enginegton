@@ -19,5 +19,7 @@ void generate_moves(const char* fen) {
 
     enum board_state state = get_moves(pos, q);
 
+    // call queue_to_uci
+
     printf("%i", q->N);
 }

@@ -4,16 +4,30 @@
 #include "mqueue.h"
 
 
+#ifdef TEST
+
+#include "debug.h"
+
+#endif
+
 U64 wpawn_att(const U8 sqr);
 U64 bpawn_att(const U8 sqr);
 U64 knight_att(const U8 sqr);
 U64 king_att(const U8 sqr);
 
 
-#define FIRST_RANK     0xFF00000000000000ULL
-#define FOURTH_RANK    0x000000FF00000000ULL
-#define FIFTH_RANK     0x00000000FF000000ULL
-#define EIGHT_RANK     0x00000000000000FFULL
+// masks used to get pawn moves 
+#define FIRST_RANK          0xFF00000000000000ULL
+#define FOURTH_RANK         0x000000FF00000000ULL
+#define FIFTH_RANK          0x00000000FF000000ULL
+#define EIGHT_RANK          0x00000000000000FFULL
+
+// "long/short castle between mask" for black (two squares, the attack on which might prevent castle)
+#define LCBM                0x000000000000000CULL
+#define SCBM                0x0000000000000060ULL
+
+// occupancy mask for queenside castle (kingside is the same as SCBM)
+#define LONG_CASTLE_OCC     0x000000000000000EULL
 
 
 void enqueue_moves(const U8 sqr, U64 moves, enum move_type mtype, struct mqueue* queue) {
@@ -99,4 +113,18 @@ void queen_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 c
     U64 moves = (rook_att(sqr, board_mask) | bishop_att(sqr, board_mask)) & ~own_pieces;
     moves &= constraint;
     enqueue_moves(sqr, moves, NORMAL, q);
+}
+
+
+void castle(U8 sqr, U8 rights, U64 board_mask, enum colour c, U64 attacks, U64 check, struct mqueue* q) {
+
+    U8 colour_shift = 56 * c;
+    U8 rights_shifted = rights << (2 * c);
+    U64 short_mask = SCBM << colour_shift; // dependent on colour shift
+
+    U64 moves = ((~mtz(short_mask & attacks) & ~mtz(short_mask & board_mask) & (rights_shifted & 0b00000100)) | 
+                (~mtz((LCBM << colour_shift) & attacks) & ~mtz((LONG_CASTLE_OCC << colour_shift) & board_mask) & (rights_shifted & 0b00001000)))
+                & ~mtz(check); 
+
+    enqueue_moves(sqr, moves, CASTLE, 0);
 }

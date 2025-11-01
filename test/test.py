@@ -8,9 +8,11 @@ if len(sys.argv) < 2:
 
 subprocess.run(["make", "clean-test"])
 subprocess.run(["make", "test"])
-# make clean-test
-# make test
 
-# check if the test exists in available
+test_name = sys.argv[1]
 
-routines.available[sys.argv[1]]()
+if test_name not in routines.available:
+    print("Test name not recognised. Exit.")
+    exit(1)
+
+routines.available[test_name]()

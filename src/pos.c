@@ -170,12 +170,12 @@ struct position* from_fen(const char* fen) {
 			
 		case 1:
 			if (fen[part_start] == '-') pos->castling_rights = 0; 
-			else pos->castling_rights = read_fen_castle(fen, part_start, index);
+			else pos->castling_rights = castle_from_fen(fen, part_start, index);
 			break; 
 		
 		case 2:
 			if (fen[part_start] == '-') pos->en_passant_sqr = 0ULL; 
-			else pos->en_passant_sqr = 1ULL << sqr_to_internal(&fen[part_start]); 
+			else pos->en_passant_sqr = 1ULL << sqr_from_uci(&fen[part_start]); 
 			break; 
 		} 
 		
@@ -311,7 +311,7 @@ enum board_state get_moves(struct position* pos, struct mqueue* queue) {
 
 	// DOUBLE CHECK HERE
 
-	// CASTLE HERE
+	castle(moving_king_sqr, pos->castling_rights, board_mask, turn, attacks, check_path, queue);
 
 	current_piece = current_piece->next;
 	while (current_piece != NULL) {
