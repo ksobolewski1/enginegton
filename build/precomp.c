@@ -41,6 +41,8 @@ void write_magics(FILE* fptr, const char* name, U8 rook);
 
 void write_configs(FILE* fptr);
 
+void write_king_rays(FILE* fptr);
+
 
 U64 king_attack(U8 y, U8 x, U8 origin);
 
@@ -69,7 +71,7 @@ int main(int argc, char** argv) {
 
     if (argc < 2) {
 	
-	return 1;
+	    return 1;
     }
  
     FILE* fptr;
@@ -101,6 +103,8 @@ int main(int argc, char** argv) {
     // all configurations of blockers for sliding pieces
     printf("Writing rook and bishop attacks...\n");
     write_configs(fptr);
+
+    write_king_rays(fptr);
 
     // random zob numbers
     // evaluation tables
@@ -174,6 +178,44 @@ void write_configs(FILE* fptr) {
 }
 
 
+void write_king_rays(FILE* fptr) {
+
+    fprintf(fptr, "const U64 king_rays[64][9] = {\n");
+
+    // ray by ray 
+
+    for (U8 i = 0; i < 64; i++) {
+
+        fprintf(fptr, "{");
+        
+        U8 x = i % 8;
+        U8 y = (i - x) >> 3;
+
+        // rank is y
+        // file is x
+
+        U64 n, s, e, w, nw, sw, se, ne;
+        n = w = e = s = nw = sw = se = ne = 0;
+
+        for (I8 i = y - 1; i >= 0; i--) n |= (1ULL << (i * 8 + x));
+        for (U8 i = y + 1; i < 8; i++) s |= (1ULL << (i * 8 + x)); 
+        for (U8 i = x + 1; i < 8; i++) e |= (1ULL << (y * 8 + i)); 
+        for (I8 i = x - 1; i >= 0; i--) w |= (1ULL << (y * 8 + i));  
+
+        for (I8 i = y - 1, j = x + 1; i >= 0 && j < 8; i--, j++) ne |= (1ULL << (i * 8 + j));
+        for (I8 i = y + 1, j = x + 1; i < 8 && j < 8; i++, j++) se |= (1ULL << (i * 8 + j));
+        for (I8 i = y - 1, j = x - 1; i >= 0 && j >= 0; i--, j--) nw |= (1ULL << (i * 8 + j));
+        for (I8 i = y + 1, j = x - 1; i < 8 && j >= 0; i++, j--) sw |= (1ULL << (i * 8 + j));
+
+        fprintf(fptr, "%lluu, %lluu, %lluu, %lluu, 0, %lluu, %lluu, %lluu, %lluu, ", nw, n, ne, w, e, sw, s, se);
+
+        fprintf(fptr, "},\n");
+    }
+
+    fprintf(fptr, "};\n"); 
+}
+
+
 U64 king_attack(U8 y, U8 x, U8 origin) {
     
     U64 control = 0;
@@ -241,9 +283,9 @@ U64 bishop_attack(U8 y, U8 x, U8 origin) {
     U64 control = 0;
 
     for (I8 i = y - 1, j = x + 1; i >= 0 && j < 8; i--, j++) control |= (1ULL << (i * 8 + j));
-    for (U8 i = y + 1, j = x + 1; i < 8 && j < 8; i++, j++) control |= (1ULL << (i * 8 + j));
+    for (I8 i = y + 1, j = x + 1; i < 8 && j < 8; i++, j++) control |= (1ULL << (i * 8 + j));
     for (I8 i = y - 1, j = x - 1; i >= 0 && j >= 0; i--, j--) control |= (1ULL << (i * 8 + j));
-    for (U8 i = y + 1, j = x - 1; i < 8 && j >= 0; i++, j--) control |= (1ULL << (i * 8 + j));
+    for (I8 i = y + 1, j = x - 1; i < 8 && j >= 0; i++, j--) control |= (1ULL << (i * 8 + j));
 	
     return control;
 

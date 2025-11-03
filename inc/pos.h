@@ -14,8 +14,6 @@ struct position {
     
     struct piece* pawns[2]; 
     struct piece* pieces[2];
-    
-    U64 pin_paths[64];
 
     U64 side_masks[2];
     U64 board_mask;
@@ -26,7 +24,6 @@ struct position {
     enum colour side;
     
 };
-
 
 
 void free_pos(struct position* pos); 

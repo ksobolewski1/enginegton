@@ -4,10 +4,10 @@
 #include "pos.h"
 #include "mqueue.h"
 
-
 #ifdef TEST
 
 #include "debug.h"
+#include "data.h"
 
 #endif
 
@@ -21,5 +21,5 @@ void generate_moves(const char* fen) {
 
     // call queue_to_uci
 
-    printf("%i", q->N);
+    //printf("%i", q->N);
 }

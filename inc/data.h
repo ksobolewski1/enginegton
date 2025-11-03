@@ -26,6 +26,8 @@ extern const U64 bishop_magics[64];
 extern const U64 rook_configs[64][4096];
 extern const U64 bishop_configs[64][512];
 
+extern const U64 king_rays[64][9];
+
 // values for zobrist hashing 
 //extern const U64 zob_table[64][12]; // for each piece on each square 
 //extern const U64 zob_castle[16]; // for each combination of castling rights 
