@@ -4,39 +4,22 @@
 #include "core.h"
 
 
-struct mqueue; 
-struct piece;
+/*
+
+Unit implementing the board 
+
+*/
 
 
-struct position {
-    
-    struct piece* board[64];
-    
-    struct piece* pawns[2]; 
-    struct piece* pieces[2];
-
-    U64 side_masks[2];
-    U64 board_mask;
-    U64 en_passant_sqr;
-
-    U8 castling_rights; 
-    
-    enum colour side;
-    
-};
+U8 get_move_count();
 
 
-void free_pos(struct position* pos); 
+U32* get_move_list();
 
 
-struct position* from_fen(const char* fen); 
+// builds the board from fen notation
+U8 from_fen(const char* fen); 
 
-
-char* to_fen(struct position* pos); 
-
-
-enum board_state get_moves(struct position* pos, struct mqueue* q); 
- 
-
-enum board_state update_pos(struct position* pos, struct mqueue* q, U32 move); 
+// move generation function
+U32* get_moves(); 
 

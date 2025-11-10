@@ -1,6 +1,13 @@
 #pragma once 
 
 
+/*
+
+    Types and structs used throughout the program
+
+*/
+
+
 typedef unsigned long long int U64; 
 typedef unsigned int U32; 
 typedef unsigned short int U16;
@@ -71,25 +78,9 @@ static inline U16 move_lts(const U32 m) {
 // short for "mask-to-ones": output the mask itself if at least one bit set, else 0xFFFFFFFFFFFFFFFF
 static inline U64 mto(U64 mask) {
     return mask | (-!mask);
-
-    /*
-
-        this function is used when passing in constraints to piece moves in moves.c;
-        when the constraints are 0, this function turns the mask into all 1s, 
-        so that it has no effect on the moves (the piece is not pinned, nor is there check)
-    
-    */
 }
 
 // short for "mask-to-zeroes": output 0xFFFFFFFFFFFFFFFF if at least one bit set, else 0
 static inline U64 mtz(U64 mask) {
     return -!!mask;
-
-    /*
-
-        this function is used to zero-out a bitboard if a condition is not met;
-        for example, if there is no intersection between an attack and the king, 
-        this function will zero-out the check_path
-    
-    */
 }

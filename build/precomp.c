@@ -271,8 +271,8 @@ U64 rook_attack(U8 y, U8 x, U8 origin) {
     U64 control = 0;
 
     for (I8 i = y - 1; i >= 0; i--) control |= (1ULL << (i * 8 + x));
-    for (U8 i = y + 1; i < 8; i++) control |= (1ULL << (i * 8 + x));
-    for (U8 i = x + 1; i < 8; i++) control |= (1ULL << (y * 8 + i));
+    for (I8 i = y + 1; i < 8; i++) control |= (1ULL << (i * 8 + x));
+    for (I8 i = x + 1; i < 8; i++) control |= (1ULL << (y * 8 + i));
     for (I8 i = x - 1; i >= 0; i--) control |= (1ULL << (y * 8 + i));
 	
     return control;
@@ -296,8 +296,8 @@ U64 rook_mask(U8 y, U8 x, U8 origin) {
     U64 control = 0;
 
     for (I8 i = y - 1; i >= 1; i--) control |= (1ULL << (i * 8 + x));
-    for (U8 i = y + 1; i < 7; i++) control |= (1ULL << (i * 8 + x));
-    for (U8 i = x + 1; i < 7; i++) control |= (1ULL << (y * 8 + i));
+    for (I8 i = y + 1; i < 7; i++) control |= (1ULL << (i * 8 + x));
+    for (I8 i = x + 1; i < 7; i++) control |= (1ULL << (y * 8 + i));
     for (I8 i = x - 1; i >= 1; i--) control |= (1ULL << (y * 8 + i));
     
     rook_masks[origin] = control;
@@ -309,7 +309,7 @@ U64 bishop_mask(U8 y, U8 x, U8 origin) {
     U64 control = 0;
 
     for (I8 i = y - 1, j = x + 1; i >= 1 && j < 7; i--, j++) control |= (1ULL << (i * 8 + j));
-    for (U8 i = y + 1, j = x + 1; i < 7 && j < 7; i++, j++) control |= (1ULL << (i * 8 + j));
+    for (I8 i = y + 1, j = x + 1; i < 7 && j < 7; i++, j++) control |= (1ULL << (i * 8 + j));
     for (I8 i = y - 1, j = x - 1; i >= 1 && j >= 1; i--, j--) control |= (1ULL << (i * 8 + j));
     for (I8 i = y + 1, j = x - 1; i < 7 && j >= 1; i++, j--) control |= (1ULL << (i * 8 + j));
     
@@ -320,66 +320,66 @@ U64 bishop_mask(U8 y, U8 x, U8 origin) {
 
 U64 rook_config(U8 origin, U64 blockers) {
 
-    U8 x = origin % 8;
-    U8 y = (origin - x) >> 3;
+    I8 x = origin % 8;
+    I8 y = (origin - x) >> 3;
     
     U64 config = 0;
     
     for (I8 i = y - 1; i >= 0; i--) {
-	U64 next = (1ULL << (i * 8 + x));
-	config |= next;
-	if ((blockers & next) > 0) break;
+        U64 next = (1ULL << (i * 8 + x));
+        config |= next;
+        if ((blockers & next) > 0) break;
     }
     
-    for (U8 i = y + 1; i < 8; i++) {
-	U64 next = (1ULL << (i * 8 + x));
-	config |= next;
-	if ((blockers & next) > 0) break;
+    for (I8 i = y + 1; i < 8; i++) {
+        U64 next = (1ULL << (i * 8 + x));
+        config |= next;
+        if ((blockers & next) > 0) break;
     }
     
-    for (U8 i = x + 1; i < 8; i++) {
-	U64 next = (1ULL << (y * 8 + i));
-	config |= next;
-	if ((blockers & next) > 0) break;
+    for (I8 i = x + 1; i < 8; i++) {
+        U64 next = (1ULL << (y * 8 + i));
+        config |= next;
+        if ((blockers & next) > 0) break;
     }
     
     for (I8 i = x - 1; i >= 0; i--) {
-	U64 next = (1ULL << (y * 8 + i));
-	config |= next;
-	if ((blockers & next) > 0) break;
+        U64 next = (1ULL << (y * 8 + i));
+        config |= next;
+        if ((blockers & next) > 0) break;
     }
     return config;
 }
 
 U64 bishop_config(U8 origin, U64 blockers) {
 
-    U8 x = origin % 8;
-    U8 y = (origin - x) >> 3;
+    I8 x = origin % 8;
+    I8 y = (origin - x) >> 3;
     
     U64 config = 0;
     
     for (I8 i = y - 1, j = x + 1; i >= 0 && j < 8; i--, j++) {
-	U64 next = 1ULL << (i * 8 + j);
-	config |= next;
-	if ((blockers & next) > 0) break;
+        U64 next = 1ULL << (i * 8 + j);
+        config |= next;
+        if ((blockers & next) > 0) break;
     }
     
-    for (U8 i = y + 1, j = x + 1; i < 8 && j < 8; i++, j++) {
-	U64 next = 1ULL << (i * 8 + j);
-	config |= next;
-	if ((blockers & next) > 0) break;
+    for (I8 i = y + 1, j = x + 1; i < 8 && j < 8; i++, j++) {
+        U64 next = 1ULL << (i * 8 + j);
+        config |= next;
+        if ((blockers & next) > 0) break;
     }
     
     for (I8 i = y - 1, j = x - 1; i >= 0 && j >= 0; i--, j--) {
-	U64 next = 1ULL << (i * 8 + j);
-	config |= next;
-	if ((blockers & next) > 0) break;
+        U64 next = 1ULL << (i * 8 + j);
+        config |= next;
+        if ((blockers & next) > 0) break;
     }
     
     for (I8 i = y + 1, j = x - 1; i < 8 && j >= 0; i++, j--) {
-	U64 next = 1ULL << (i * 8 + j);
-	config |= next;
-	if ((blockers & next) > 0) break;
+        U64 next = 1ULL << (i * 8 + j);
+        config |= next;
+        if ((blockers & next) > 0) break;
     }
     return config;
 }
@@ -388,29 +388,28 @@ U64 bishop_config(U8 origin, U64 blockers) {
 U64 magic(U8 origin, U8 rook) {
     
     U64 mask = rook ? rook_masks[origin] : bishop_masks[origin]; 
-    U8 indices[14] = {0};
+
+    U8 indices[64] = {0};
     U8 indices_len = 0;
-    
-    U8 bit = 0;
-    while (mask > 0) {
-	U64 move = mask & (1ULL << bit);
-	if (move > 0) {
-	    indices[indices_len++] = bit;
-	    mask ^= move;
-	}
-	bit++; 
+    U8 last = 0;
+    for (U8 i = 0; i < 64; i++) {
+        if (((mask >> i) & 1) == 1) {
+            indices[last++] = i;
+            indices_len++;
+        }
     }
+
+    U32 num = 1 << indices_len; 
+    U64* all_blocks = (U64*)malloc(sizeof(U64) * num);
     
-    U16 num = (U16)(1 << indices_len); 
-    U64* all_blocks = (U64*)malloc(sizeof(U64) * (num + 1));
-    
-    for (U16 i = 0; i < num; i++) {
-	U64 blockers = 0;
-	for (U16 j = 0; j < indices_len; j++) {
-	    U64 bit = (i >> j) & 1;
-	    blockers |= (bit << indices[j]);
-	}
-	all_blocks[i] = blockers;
+    for (U32 i = 0; i < num; i++) {
+
+        all_blocks[i] = 0;
+
+        for (U32 j = 0; j < indices_len; j++) {
+            U64 bit = (i >> j) & 1;
+            all_blocks[i] |= (bit << indices[j]);
+        }
     }
 
     U64 magic;
@@ -418,7 +417,6 @@ U64 magic(U8 origin, U8 rook) {
     while (1) {
 
 	magic = genrand64_int64() & genrand64_int64() & genrand64_int64();
-	
 	U8 taken[4096] = {0};
 	U16 max = rook ? 4095 : 511;
 	
@@ -435,11 +433,15 @@ U64 magic(U8 origin, U8 rook) {
 
 	    taken[key] = 1;
 	    
-	    if (i == num - 1) goto END;
+	    if (i == num - 1) {
+
+            goto END;
+        }
 	}
   }
 
 END: 
+
     free(all_blocks); 
     return magic;
 }

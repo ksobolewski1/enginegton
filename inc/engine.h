@@ -1,6 +1,11 @@
 #pragma once
 
-// MAIN ENGINE API
+
+/*
+
+Functions implementing the engine's core functionalities
+
+*/
 
 
-void generate_moves(const char* fen);
+int generate_moves(const char* fen);

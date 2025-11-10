@@ -2,24 +2,32 @@
 
 #include "core.h"
 #include "pos.h"
-#include "mqueue.h"
+#include "format.h"
+
+#include <stdio.h>
 
 #ifdef TEST
 
 #include "debug.h"
-#include "data.h"
 
 #endif
 
 
-void generate_moves(const char* fen) {
+int generate_moves(const char* fen) {
 
-    struct position* pos = from_fen(fen);
-    struct mqueue* q = get_mqueue();
+    if (from_fen(fen)) {
+        printf("Failed to load in the position from fen");
+        return 1;
+    }
+    
+    get_moves();
 
-    enum board_state state = get_moves(pos, q);
+    const char* res = moves_to_uci(get_move_list(), get_move_count());
+    if (!res) {
+        printf("Failed to convert moves to uci. Exit");
+        return 1;
+    }
+    printf(res);
+    return 0;
 
-    // call queue_to_uci
-
-    //printf("%i", q->N);
 }

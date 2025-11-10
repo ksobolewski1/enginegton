@@ -4,28 +4,113 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef TEST
 
-struct piece* get_piece(enum piece_id id, U8 sqr) {
+#include "debug.h"
+#include <stdio.h>
 
-    struct piece* p = (struct piece*)malloc(sizeof(struct piece));
+#endif
 
-    if (p == NULL) {
-	    fprintf(stderr, "Error: Failed to allocate memory for struct 'piece'\n");
-	    return NULL;
-    }
 
-    p->id = id; 
-    p->sqr = sqr; 
-    p->next = p->prev = NULL; 
+U64 wpawn_att(const U8 sqr);
+U64 bpawn_att(const U8 sqr);
+U64 knight_att(const U8 sqr);
+U64 king_att(const U8 sqr);
 
-    return p; 
+
+// masks used to get pawn moves 
+#define FOURTH_RANK         0x000000FF00000000ULL
+#define FIFTH_RANK          0x00000000FF000000ULL
+
+// "long/short castle between mask" for black (two squares, the attack on which might prevent castle)
+#define LCBM                0x000000000000000CULL
+#define SCBM                0x0000000000000060ULL
+
+// occupancy mask for queenside castle (kingside is the same as SCBM)
+#define LONG_CASTLE_OCC     0x000000000000000EULL
+
+
+U64 bishop_att(const U8 sqr, const U64 blockers_mask) {
+    
+    U64 blockers = blockers_mask & bishop_masks[sqr];
+    U16 k = (blockers * bishop_magics[sqr]) >> (64 - bishop_shifts[sqr]);
+    return bishop_configs[sqr][k];
 }
 
 
-void free_piece(struct piece* p) {
-    if (p->next != NULL) free_piece(p->next);
-    p->next = p->prev = NULL; 
-    free(p); 
+U64 rook_att(const U8 sqr, const U64 blockers_mask) {
+
+    U64 blockers = blockers_mask & rook_masks[sqr];
+    U16 k = (blockers * rook_magics[sqr]) >> (64 - rook_shifts[sqr]);
+    return rook_configs[sqr][k];    
 }
 
 
+U64 wpawn_moves(const U8 sqr, const U64 en_passant_sqr, U64 blockers, const U64 opposing_pieces, U64 constraint) {
+
+    U64 moves = (1ULL << (sqr - 8)) & ~blockers;
+    moves |= ((moves >> 8) & ~blockers) & FOURTH_RANK;
+    moves |= wpawn_attacks[sqr] & opposing_pieces;
+    moves |= en_passant_sqr;
+    moves &= constraint;
+
+    return moves;
+}
+
+
+U64 bpawn_moves(const U8 sqr, const U64 en_passant_sqr, U64 blockers, const U64 opposing_pieces, U64 constraint) {
+
+    U64 moves = (1ULL << (sqr + 8)) & ~blockers;
+    moves |= ((moves << 8) & ~blockers) & FIFTH_RANK; 
+    moves |= bpawn_attacks[sqr] & opposing_pieces;
+    moves |= en_passant_sqr;
+    moves &= constraint;
+
+    return moves;
+}
+
+
+U64 knight_moves(const U8 sqr, const U64 own_pieces, U64 constraint) {
+
+    return (knight_att(sqr) & ~own_pieces) & constraint;
+}
+
+
+U64 king_moves(const U8 sqr, const U64 own_pieces, const U64 attacks) {
+
+    return king_att(sqr) & ~(own_pieces | attacks);
+}
+
+
+U64 bishop_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 constraint) {
+
+    U64 moves = bishop_att(sqr, board_mask) & ~own_pieces;
+    return moves & constraint;
+}
+
+
+U64 rook_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 constraint) {
+
+    U64 moves = rook_att(sqr, board_mask) & ~own_pieces;
+    return moves & constraint;
+}
+
+
+U64 queen_moves(const U8 sqr, const U64 board_mask, const U64 own_pieces, U64 constraint){
+    
+    U64 moves = (rook_att(sqr, board_mask) | bishop_att(sqr, board_mask)) & ~own_pieces;
+    return moves & constraint;
+}
+
+
+U64 castle(U8 sqr, U8 rights, U64 board_mask, enum colour c, U64 attacks, U64 check) {
+
+    U8 colour_shift = 56 * c;
+    U8 rights_shifted = rights << (2 * c);
+    U64 short_mask = SCBM << colour_shift; // dependent on colour shift
+
+    return ((~mtz(short_mask & attacks) & ~mtz(short_mask & board_mask) & (rights_shifted & 0b00000100)) | 
+                (~mtz((LCBM << colour_shift) & attacks) & ~mtz((LONG_CASTLE_OCC << colour_shift) & board_mask) & (rights_shifted & 0b00001000)))
+                & ~mtz(check); 
+
+}

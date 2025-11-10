@@ -2,6 +2,11 @@
 
 #include <stdio.h>
 
+/*
+
+    Functions to help debug the program
+
+*/
 
 static inline void printU64(U64 data) {
 
@@ -16,4 +21,12 @@ static inline void printU64(U64 data) {
     }
 
     printf("\n");
+}
+
+
+static inline void print_move(U32 move) {
+
+    U64 board = 0ULL;
+    board = (1ULL << origin(move)) | (1ULL << destination(move));
+    printU64(board);
 }

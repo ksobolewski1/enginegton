@@ -4,3 +4,4 @@ build/eng
 build/test
 build/precomp
 src/data.c
+test/__pycache__
