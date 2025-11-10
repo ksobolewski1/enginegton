@@ -47,17 +47,6 @@ U32* get_move_list(){
 	return queue;
 }
 
-
-void enqueue(const U8 sqr, U64 moves, enum move_type mtype) {
-    
-    while (moves) {	
-		U8 destination_sqr = __builtin_ctzll(moves);
-		queue[queue_count++] = get_move(sqr, destination_sqr, mtype, 0);
-		moves &= moves - 1; 
-    }
-}
-
-
 void add_piece(enum piece_id id, U8 sqr, enum colour c) {
     
 	struct piece p = {sqr, id};
@@ -165,6 +154,35 @@ U8 from_fen(const char* fen) {
 
 	return 0;
 
+}
+
+
+// U8 get_dir_index(U8 s, U8 t) {
+
+// 	int dx_raw = (t & 7) - (s & 7);
+//     int dy_raw = (t >> 3) - (s >> 3);
+
+//     int dx = (dx_raw > 0) - (dx_raw < 0); 
+//     int dy = (dy_raw > 0) - (dy_raw < 0); 
+
+// 	return (U8)((dx + 1) + ((dy + 1) * 3));      
+
+// }
+
+// U64 isolate_pin_path(U8 sqr, U8 piece_sqr, U64 pin_paths) {
+
+// 	U64 piece_mask = 1ULL << piece_sqr;
+// 	return pin_paths & king_rays[sqr][get_dir_index(sqr, piece_sqr)] & ~piece_mask & mtz(piece_mask);
+// }
+
+
+void enqueue(const U8 sqr, U64 moves, enum move_type mtype) {
+    
+    while (moves) {	
+		U8 destination_sqr = __builtin_ctzll(moves);
+		queue[queue_count++] = get_move(sqr, destination_sqr, mtype, 0);
+		moves &= moves - 1; 
+    }
 }
 
 
