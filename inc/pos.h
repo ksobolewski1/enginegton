@@ -21,5 +21,5 @@ U32* get_move_list();
 U8 from_fen(const char* fen); 
 
 // move generation function
-U32* get_moves(); 
+U32* get_moves(enum board_state* s); 
 

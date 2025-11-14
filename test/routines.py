@@ -4,10 +4,28 @@ import subprocess
 from collections import Counter # since when comparing move lists, there can be duplicates 
 
 
+def get_board_state(board):
+    checks = [
+        (1, board.is_check),
+        (2, board.is_checkmate),
+        (3, board.is_stalemate),
+        (4, board.is_insufficient_material),
+        (5, board.is_seventyfive_moves),
+        (6, board.is_fivefold_repetition),
+        (7, board.is_game_over),
+    ]
+
+    for code, fn in checks:
+        if fn():
+            return code
+
+    return 0
+
+
 def move_gen_accuracy():
 
     test_set = []
-    with open("./test/mga/in.txt", "r") as input_file:
+    with open("./test/mga.txt", "r") as input_file:
         test_set = [line for line in input_file]
 
     fails = False
@@ -26,7 +44,14 @@ def move_gen_accuracy():
         if engine_moves[-1] == "":
             engine_moves.pop()
 
-        # must also check if the board state is correct
+        state = get_board_state(board)
+        eng_pos_state = int(engine_moves.pop())
+        if state != eng_pos_state:
+            print(f"inaccurate board state read: should be {state}, got {eng_pos_state}")
+            cont = input("Continue? (y/n): ").strip().lower()
+            if cont != 'y':
+                print("test aborted")
+                exit(0)
 
         pmc = Counter(python_moves)
         emc = Counter(engine_moves)

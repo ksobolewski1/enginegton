@@ -17,7 +17,7 @@ typedef signed char I8;
 typedef signed long long int I64; 
 
 
-enum board_state { QUIET, CHECK, CHECKMATE, STALEMATE, INSUFFICIENT, THREEFOLD, FIFTY, ERROR_STATE };
+enum board_state { QUIET, CHECK, CHECKMATE, STALEMATE, INSUFFICIENT, SEVENTYFIVE, FIVEFOLD, OVER };
 
 
 enum colour { BLACK, WHITE };

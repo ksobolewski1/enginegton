@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 int main(int argc, char** argv) {
 
     if (argc < 3) {
-        printf("Test name or test data were not passed to the engine. Exit.");
+        printf("Test name or test data were not passed to the engine. Exit.\n");
         return 1;
     }
 
@@ -27,10 +27,12 @@ int main(int argc, char** argv) {
 
     switch (test_code) {
         case 0:
-            generate_moves(argv[2]);
+            if (generate_moves(argv[2]) == 1) {
+                printf("Moge generation failed. Exit.\n");
+            }
             break;
         default:
-            printf("Test code not recognised by the engine.");
+            printf("Test code not recognised by the engine. Exit.\n");
             return 1;
     }
 

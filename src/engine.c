@@ -16,15 +16,16 @@
 int generate_moves(const char* fen) {
 
     if (from_fen(fen)) {
-        printf("Failed to load in the position from fen");
+        printf("Failed to load the position from fen.\n");
         return 1;
     }
     
-    get_moves();
+    enum board_state s;
+    get_moves(&s);
 
-    const char* res = moves_to_uci(get_move_list(), get_move_count());
+    const char* res = pos_to_uci(get_move_list(), get_move_count(), s);
     if (!res) {
-        printf("Failed to convert moves to uci. Exit");
+        printf("Failed to convert moves to uci.\n");
         return 1;
     }
     printf(res);

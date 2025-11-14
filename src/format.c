@@ -93,9 +93,9 @@ const char* move_to_uci(U32 move) {
 }
 
 
-const char* moves_to_uci(U32* moves, U8 moves_count) {
+const char* pos_to_uci(U32* moves, U8 moves_count, enum board_state s) {
 
-  char* res = malloc((moves_count * 4) + (moves_count - 1) + 1);
+  char* res = malloc(sizeof(char) * ((moves_count * 4) + (moves_count + 1)));
   if (!res) {
     printf("Malloc fail in moves_to_uci.\n");
   }
@@ -107,6 +107,11 @@ const char* moves_to_uci(U32* moves, U8 moves_count) {
     strcat(res, m);
     strcat(res, ";");
   }
+
+  char state[2];
+  state[0] = (char)s + '0';
+  state[1] = '\0';
+  strcat(res, state);
 
   return res;
 }

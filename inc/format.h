@@ -31,5 +31,5 @@ U16 move_from_uci16(const char* move);
 const char* move_to_uci(U32 move);
 
 
-// returns moves separated with ';'
-const char* moves_to_uci(U32* moves, U8 move_count);
+// returns moves separated with ';' and board state at the ned
+const char* pos_to_uci(U32* moves, U8 move_count, enum board_state s);

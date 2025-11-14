@@ -87,7 +87,7 @@ U8 from_fen(const char* fen) {
 
 			if (id == WHITE_KING) {
 				if (pieces[WHITE][0].id == WHITE_KING) {
-					printf("Invalid fen: more than 1 white king found. Exit.");
+					printf("Invalid fen: more than 1 white king found.\n");
 					return 1; 
 				}
 				add_piece(WHITE_KING, sqr, WHITE);
@@ -95,7 +95,7 @@ U8 from_fen(const char* fen) {
 			}
 			else if (id == BLACK_KING) {
 				if (pieces[BLACK][0].id == BLACK_KING) {
-					printf("Invalid fen: more than 1 black king found. Exit.");
+					printf("Invalid fen: more than 1 black king found.\n");
 					return 1; 
 				}
 				add_piece(BLACK_KING, sqr, BLACK);	
@@ -115,7 +115,7 @@ U8 from_fen(const char* fen) {
     }
 
     if (pieces[WHITE][0].id != WHITE_KING || pieces[BLACK][0].id != BLACK_KING) {
-		printf("Invalid fen: one or both kings missing. Exit");
+		printf("Invalid fen: one or both kings missing.\n");
 		return 1;
     } 
   
@@ -186,7 +186,7 @@ void enqueue(const U8 sqr, U64 moves, enum move_type mtype) {
 }
 
 
-U32* get_moves() {
+U32* get_moves(enum board_state* s) {
     
     const enum colour wait 			= side ^ 1;
     const U8 moving_king_sqr 		= pieces[side][0].sqr;
@@ -371,7 +371,7 @@ U32* get_moves() {
 	U8  check = !!check_path;
 	U8 	move_count = !!queue_count;
 
-	pos_state = (enum board_state)((check & move_count) + ((check & !move_count) << 1) + ((!check & !move_count) * 3));
+	*s = (enum board_state)((check & move_count) + ((check & !move_count) << 1) + ((!check & !move_count) * 3));
 
 	return queue;
     
